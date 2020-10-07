@@ -185,9 +185,17 @@ def collect_events(helper, ew):
         ew.write_event(event)
     '''
 
-    opt_api_key = helper.get_global_setting('api_key')
-    opt_app_key = helper.get_global_setting('app_key')
-    opt_datadog_site = helper.get_global_setting('datadog_site')
+    # opt_api_key = helper.get_global_setting('api_key')
+    # opt_app_key = helper.get_global_setting('app_key')
+    # opt_datadog_site = helper.get_global_setting('datadog_site')
+    global_account = helper.get_arg('global_account')
+    opt_api_key = global_account['username']
+    opt_app_key = global_account['password']
+    opt_datadog_site = "com"
+    helper.log_debug("global_account: {}".format(global_account))
+    helper.log_debug("opt_api_key: {}".format(opt_api_key))
+    helper.log_debug("opt_app_key: {}".format(opt_app_key))
+
     
     opt_start_time = helper.get_arg('start_time')
     opt_end_time = helper.get_arg('end_time')
