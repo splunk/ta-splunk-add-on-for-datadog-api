@@ -77,7 +77,7 @@ class ModInputdatadog_event_stream(modinput_wrapper.base_modinput.BaseModInput):
         return scheme
 
     def get_app_name(self):
-        return "ta-splunk-add-on-for-datadog-api"
+        return "TA-splunk-add-on-for-datadog-api"
 
     def validate_input(self, definition):
         """validate the input stanza"""

@@ -1,10 +1,10 @@
 {
     "meta": {
-        "name": "ta-splunk-add-on-for-datadog-api",
+        "name": "TA-splunk-add-on-for-datadog-api",
         "displayName": "Datadog Add-on for Splunk",
         "version": "1.0.9",
         "apiVersion": "3.0.0",
-        "restRoot": "ta_splunk_add_on_for_datadog_api"
+        "restRoot": "TA_splunk_add_on_for_datadog_api"
     },
     "pages": {
         "configuration": {
@@ -280,24 +280,8 @@
                         "label": "Global Account"
                     },
                     {
-                        "field": "query",
-                        "label": "Query"
-                    },
-                    {
-                        "field": "custom_metrics",
-                        "label": "Custom Metrics (optional)"
-                    },
-                    {
                         "field": "start_time",
                         "label": "Start Time"
-                    },
-                    {
-                        "field": "duration",
-                        "label": "Duration (To)"
-                    },
-                    {
-                        "field": "duration_unit",
-                        "label": "Duration (To) Unit"
                     },
                     {
                         "field": "end_time",
@@ -318,6 +302,22 @@
                     {
                         "field": "unaggregated",
                         "label": "Unaggregated"
+                    },
+                    {
+                        "field": "query",
+                        "label": "Query"
+                    },
+                    {
+                        "field": "custom_metrics",
+                        "label": "Custom Metrics (optional)"
+                    },
+                    {
+                        "field": "duration",
+                        "label": "Duration (To)"
+                    },
+                    {
+                        "field": "duration_unit",
+                        "label": "Duration (To) Unit"
                     }
                 ],
                 "actions": [
@@ -328,6 +328,174 @@
                 ]
             },
             "services": [
+                {
+                    "name": "datadog_event_stream",
+                    "title": "datadog event stream",
+                    "entity": [
+                        {
+                            "field": "name",
+                            "label": "Name",
+                            "type": "text",
+                            "help": "Enter a unique name for the data input",
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^[a-zA-Z]\\w*$",
+                                    "errorMsg": "Input Name must start with a letter and followed by alphabetic letters, digits or underscores."
+                                },
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 100,
+                                    "errorMsg": "Length of input name should be between 1 and 100"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "interval",
+                            "label": "Interval",
+                            "type": "text",
+                            "required": true,
+                            "help": "Time interval of input in seconds.",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^\\-[1-9]\\d*$|^\\d*$",
+                                    "errorMsg": "Interval must be an integer."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "index",
+                            "label": "Index",
+                            "type": "singleSelect",
+                            "defaultValue": "default",
+                            "options": {
+                                "endpointUrl": "data/indexes",
+                                "blackList": "^_.*$",
+                                "createSearchChoice": true
+                            },
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 80,
+                                    "errorMsg": "Length of index name should be between 1 and 80."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "global_account",
+                            "label": "Global Account",
+                            "help": "Please select a global account for this input.",
+                            "required": true,
+                            "type": "singleSelect",
+                            "options": {
+                                "referenceName": "account"
+                            }
+                        },
+                        {
+                            "field": "start_time",
+                            "label": "Start Time",
+                            "help": "This is the start time from where you want to ingest the data. Please enter UTC time. Example Format: 2020-02-08 00:00:00",
+                            "required": true,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ],
+                            "options": {
+                                "placeholder": "2020-02-08 00:00:00"
+                            }
+                        },
+                        {
+                            "field": "end_time",
+                            "label": "End Time",
+                            "help": "This is the end time to where you want to ingest the data. It could be a future time. Please enter UTC time. Example Format: 2030-03-08 22:11:59",
+                            "required": true,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ],
+                            "options": {
+                                "placeholder": "2030-03-08 22:11:59"
+                            }
+                        },
+                        {
+                            "field": "priority",
+                            "label": "Priority",
+                            "help": "Priority of your events. (optional)",
+                            "required": false,
+                            "type": "radio",
+                            "defaultValue": "none",
+                            "options": {
+                                "items": [
+                                    {
+                                        "value": "low",
+                                        "label": "low"
+                                    },
+                                    {
+                                        "value": "normal",
+                                        "label": "normal"
+                                    },
+                                    {
+                                        "value": "none",
+                                        "label": "none"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "field": "sources",
+                            "label": "Sources",
+                            "help": "A comma separated string of sources. (optional)",
+                            "required": false,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "tags",
+                            "label": "Tags",
+                            "help": "A comma separated list indicating what tags, if any, should be used to filter the list of monitors by scope. (optional)",
+                            "required": false,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "unaggregated",
+                            "label": "Unaggregated",
+                            "help": "Set unaggregated to true to return all events within the specified [start,end] timeframe. ",
+                            "required": false,
+                            "type": "checkbox",
+                            "defaultValue": true
+                        }
+                    ]
+                },
                 {
                     "name": "datadog_metric_inventory",
                     "title": "datadog metric inventory",
@@ -503,175 +671,6 @@
                                     }
                                 ]
                             }
-                        }
-                    ]
-                },
-                {
-                    "name": "datadog_event_stream",
-                    "title": "datadog event stream",
-                    "entity": [
-                        {
-                            "field": "name",
-                            "label": "Name",
-                            "type": "text",
-                            "help": "Enter a unique name for the data input",
-                            "required": true,
-                            "validators": [
-                                {
-                                    "type": "regex",
-                                    "pattern": "^[a-zA-Z]\\w*$",
-                                    "errorMsg": "Input Name must start with a letter and followed by alphabetic letters, digits or underscores."
-                                },
-                                {
-                                    "type": "string",
-                                    "minLength": 1,
-                                    "maxLength": 100,
-                                    "errorMsg": "Length of input name should be between 1 and 100"
-                                }
-                            ]
-                        },
-                        {
-                            "field": "interval",
-                            "label": "Interval",
-                            "type": "text",
-                            "required": true,
-                            "help": "Time interval of input in seconds.",
-                            "validators": [
-                                {
-                                    "type": "regex",
-                                    "pattern": "^\\-[1-9]\\d*$|^\\d*$",
-                                    "errorMsg": "Interval must be an integer."
-                                }
-                            ]
-                        },
-                        {
-                            "field": "index",
-                            "label": "Index",
-                            "type": "singleSelect",
-                            "defaultValue": "default",
-                            "options": {
-                                "endpointUrl": "data/indexes",
-                                "blackList": "^_.*$",
-                                "createSearchChoice": true
-                            },
-                            "required": true,
-                            "validators": [
-                                {
-                                    "type": "string",
-                                    "minLength": 1,
-                                    "maxLength": 80,
-                                    "errorMsg": "Length of index name should be between 1 and 80."
-                                }
-                            ]
-                        },
-                        {
-                            "field": "global_account",
-                            "label": "Global Account",
-                            "help": "Please select a global account for this input.",
-                            "required": true,
-                            "type": "singleSelect",
-                            "options": {
-                                "referenceName": "account",
-                                "placeholder": "admin"
-                            }
-                        },
-                        {
-                            "field": "start_time",
-                            "label": "Start Time",
-                            "help": "This is the start time from where you want to ingest the data. Please enter UTC time. Example Format: 2020-02-08 00:00:00",
-                            "required": true,
-                            "type": "text",
-                            "validators": [
-                                {
-                                    "type": "string",
-                                    "minLength": 0,
-                                    "maxLength": 8192,
-                                    "errorMsg": "Max length of text input is 8192"
-                                }
-                            ],
-                            "options": {
-                                "placeholder": "2020-02-08 00:00:00"
-                            }
-                        },
-                        {
-                            "field": "end_time",
-                            "label": "End Time",
-                            "help": "This is the end time to where you want to ingest the data. It could be a future time. Please enter UTC time. Example Format: 2030-03-08 22:11:59",
-                            "required": true,
-                            "type": "text",
-                            "validators": [
-                                {
-                                    "type": "string",
-                                    "minLength": 0,
-                                    "maxLength": 8192,
-                                    "errorMsg": "Max length of text input is 8192"
-                                }
-                            ],
-                            "options": {
-                                "placeholder": "2030-03-08 22:11:59"
-                            }
-                        },
-                        {
-                            "field": "priority",
-                            "label": "Priority",
-                            "help": "Priority of your events. (optional)",
-                            "required": false,
-                            "type": "radio",
-                            "defaultValue": "none",
-                            "options": {
-                                "items": [
-                                    {
-                                        "value": "low",
-                                        "label": "low"
-                                    },
-                                    {
-                                        "value": "normal",
-                                        "label": "normal"
-                                    },
-                                    {
-                                        "value": "none",
-                                        "label": "none"
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "field": "sources",
-                            "label": "Sources",
-                            "help": "A comma separated string of sources. (optional)",
-                            "required": false,
-                            "type": "text",
-                            "validators": [
-                                {
-                                    "type": "string",
-                                    "minLength": 0,
-                                    "maxLength": 8192,
-                                    "errorMsg": "Max length of text input is 8192"
-                                }
-                            ]
-                        },
-                        {
-                            "field": "tags",
-                            "label": "Tags",
-                            "help": "A comma separated list indicating what tags, if any, should be used to filter the list of monitors by scope. (optional)",
-                            "required": false,
-                            "type": "text",
-                            "validators": [
-                                {
-                                    "type": "string",
-                                    "minLength": 0,
-                                    "maxLength": 8192,
-                                    "errorMsg": "Max length of text input is 8192"
-                                }
-                            ]
-                        },
-                        {
-                            "field": "unaggregated",
-                            "label": "Unaggregated",
-                            "help": "Set unaggregated to true to return all events within the specified [start,end] timeframe. ",
-                            "required": false,
-                            "type": "checkbox",
-                            "defaultValue": true
                         }
                     ]
                 }
