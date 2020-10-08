@@ -19,10 +19,6 @@
                             {
                                 "field": "name",
                                 "label": "Account name"
-                            },
-                            {
-                                "field": "username",
-                                "label": "Username"
                             }
                         ],
                         "actions": [
@@ -53,11 +49,12 @@
                             ]
                         },
                         {
-                            "field": "username",
-                            "label": "Username",
+                            "field": "api_key",
+                            "label": "API Key",
                             "type": "text",
+                            "encrypted": true,
                             "required": true,
-                            "help": "Enter the username for this account.",
+                            "help": "Enter the Datadog API key for this account.",
                             "options": {
                                 "placeholder": "Enter the username here"
                             },
@@ -65,24 +62,40 @@
                                 {
                                     "type": "string",
                                     "minLength": 1,
-                                    "maxLength": 200,
-                                    "errorMsg": "Length of username should be between 1 and 200"
+                                    "maxLength": 8192,
+                                    "errorMsg": "Length of username should be between 1 and 8192"
                                 }
                             ]
                         },
                         {
-                            "field": "password",
-                            "label": "Password",
+                            "field": "app_key",
+                            "label": "APP Key",
                             "type": "text",
                             "encrypted": true,
                             "required": true,
-                            "help": "Enter the password for this account.",
+                            "help": "Enter the Datadog Application key for this account.",
                             "validators": [
                                 {
                                     "type": "string",
                                     "minLength": 1,
                                     "maxLength": 8192,
-                                    "errorMsg": "Length of password should be between 1 and 8192"
+                                    "errorMsg": "Length of Datadog Application key should be between 1 and 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "dd_site",
+                            "label": "Datadog Site",
+                            "type": "text",
+                            "encrypted": false,
+                            "required": true,
+                            "help": "Enter the Datadog Site for this account.",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Length of Datadog Site should be between 1 and 8192"
                                 }
                             ]
                         }

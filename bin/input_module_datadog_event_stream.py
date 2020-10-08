@@ -189,12 +189,13 @@ def collect_events(helper, ew):
     # opt_app_key = helper.get_global_setting('app_key')
     # opt_datadog_site = helper.get_global_setting('datadog_site')
     global_account = helper.get_arg('global_account')
-    opt_api_key = global_account['username']
-    opt_app_key = global_account['password']
-    opt_datadog_site = "com"
+    opt_api_key = global_account['api_key']
+    opt_app_key = global_account['app_key']
+    opt_datadog_site = global_account['dd_site']
     helper.log_debug("global_account: {}".format(global_account))
     helper.log_debug("opt_api_key: {}".format(opt_api_key))
     helper.log_debug("opt_app_key: {}".format(opt_app_key))
+    helper.log_debug("opt_datadog_site: {}".format(opt_datadog_site))
 
     
     opt_start_time = helper.get_arg('start_time')
@@ -306,7 +307,7 @@ def collect_events(helper, ew):
                 try:
                     event_time = event['date_happened']
                     event = helper.new_event(json.dumps(
-                        event), time=event_time, host=None, index=None, source=None, sourcetype="DataDog Events:events", done=True, unbroken=True)
+                        event), time=event_time, host=None, index=None, source=None, sourcetype=None, done=True, unbroken=True)
                     ew.write_event(event)
 
                     # save checkpoint for every event

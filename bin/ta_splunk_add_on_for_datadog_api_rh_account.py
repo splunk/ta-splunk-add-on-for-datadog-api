@@ -15,19 +15,29 @@ util.remove_http_proxy_env_vars()
 
 fields = [
     field.RestField(
-        'username',
+        'api_key',
         required=True,
         encrypted=False,
         default=None,
         validator=validator.String(
             min_len=1, 
-            max_len=200, 
+            max_len=8192, 
         )
     ), 
     field.RestField(
-        'password',
+        'app_key',
         required=True,
         encrypted=True,
+        default=None,
+        validator=validator.String(
+            min_len=1, 
+            max_len=8192, 
+        )
+    ),
+    field.RestField(
+        'dd_site',
+        required=True,
+        encrypted=False,
         default=None,
         validator=validator.String(
             min_len=1, 
