@@ -28,14 +28,16 @@ The configuration steps are common for `on-prem` and `cloud`. Please follow the 
 
 2. Access the TA from the list of applications.
 
-3. Set global setings.
+3. Set global accounts.
 - Click on `Configuration` button on the top left corner.
-- Click on `Add-on Settings` button.
-- Enter the following details:
-  - **API Key** (_required_): This is Datadog API Key. 
-  - **APP Key** (_required_): This is Datadog Application Key
-  - **Datadog Site** (_required_): Please enter "com" if you are on Datadog US site or enter "eu" if you are on Datadog EU site.
-- Click on the `Save` green button.
+- Click on `Account` button.
+- Click on `Add` button on the top right corner.
+- Enter the following details in the pop up box:
+  - **Account name** (_required_): Enter a unique name for this account.
+  - **API Key** (_required_): Enter the Datadog API key for this account.
+  - **APP Key** (_required_): Enter the Datadog Application key for this account.
+  - **Datadog Site** (_required_): Enter the Datadog Site for this account. Please enter "com" if you are on Datadog US site or enter "eu" if you are on Datadog EU site.
+- Click on the `Add` green button.
 
 4. Create an input.
 
@@ -47,6 +49,7 @@ The configuration steps are common for `on-prem` and `cloud`. Please follow the 
     - **Name** (_required_): Unique name for the data input.
     - **Interval** (_required_): Time interval of input in seconds. 
     - **Index** (_required_): Index for storing data.
+    - **Global Account** (_required_): Please select a global account for this input.
     - **Start Time** (_required_): This is the start time from where you want to ingest the data. Please enter UTC time. Required Format: 2020-02-08 00:00:00.
     - **End Time** (_required_): This is the end time to where you want to ingest the data. It could be a future time. Please enter UTC time. Required Format: 2030-03-08 22:11:59.
     - **Priority** (_optional_): Priority of your events.
@@ -63,6 +66,7 @@ The configuration steps are common for `on-prem` and `cloud`. Please follow the 
     - **Name** (_required_): Unique name for the data input.
     - **Interval** (_required_): Time interval of input in seconds. 
     - **Index** (_required_): Index for storing data.
+    - **Global Account** (_required_): Please select a global account for this input.
     - **Query** (_required_): Metric query string
     - **Custom Metrics (optional)** (_optional_): You may use "Custom Metrics" parameters from datadog (https://docs.datadoghq.com/integrations/system/) to override pre-populated "Query" parameter
     - **Start Time** (_required_): This is the start time from where you want to ingest the data. Please enter UTC time. Required Format: 2020-02-08 00:00:00.
