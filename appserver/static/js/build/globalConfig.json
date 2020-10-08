@@ -89,7 +89,7 @@
                             "type": "text",
                             "encrypted": false,
                             "required": true,
-                            "help": "Enter the Datadog Site for this account.",
+                            "help": "Enter the Datadog Site for this account. Please enter \"com\" if you are on Datadog US site or enter \"eu\" if you are on Datadog EU site.",
                             "validators": [
                                 {
                                     "type": "string",
