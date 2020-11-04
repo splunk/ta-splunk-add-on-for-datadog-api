@@ -65,10 +65,11 @@ def validate_input(helper, definition):
 
 
 def collect_events(helper, ew):
-    # Get User Input
-    opt_api_key = helper.get_global_setting('api_key')
-    opt_app_key = helper.get_global_setting('app_key')
-    opt_datadog_site = helper.get_global_setting('datadog_site')
+    # Get account info
+    global_account = helper.get_arg('global_account')
+    opt_api_key = global_account['api_key']
+    opt_app_key = global_account['app_key']
+    opt_datadog_site = global_account['dd_site']
     
     opt_start_time = helper.get_arg('start_time')
     opt_duration = helper.get_arg('duration')
@@ -204,12 +205,10 @@ def collect_events(helper, ew):
                                       
                     # Calcuated field: Host
                     runtime_host = re.split(':', event['scope'])[1]
-                    helper.log_debug("event --- {}".format(event))
             
                     # Build Event
                     # e = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(event))
                     event_time = str(event['start'])[:-3]
-                    helper.log_debug("event_time-- {}".format(event_time))
                     e = helper.new_event(time=event_time, host=runtime_host, source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=runtime_sourcetype, data=json.dumps(event), done=True, unbroken=True)
                     try:
                         ew.write_event(e)
@@ -221,11 +220,9 @@ def collect_events(helper, ew):
                     except Exception as ex:
                         raise ex
             else:
-                helper.log_debug("events --- {}".format(events))
                 events['Timestamp'] = str(events['from_date']/1000)
 
                 event_time = str(events['from_date'])[:-3]
-                helper.log_debug("event_time-- {}".format(event_time))
         
                 # Build Event
                 # e = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(event))

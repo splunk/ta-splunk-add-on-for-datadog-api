@@ -1,0 +1,680 @@
+{
+    "meta": {
+        "name": "TA-splunk-add-on-for-datadog-api",
+        "displayName": "Datadog Add-on for Splunk",
+        "version": "1.0.9",
+        "apiVersion": "3.0.0",
+        "restRoot": "TA_splunk_add_on_for_datadog_api"
+    },
+    "pages": {
+        "configuration": {
+            "title": "Configuration",
+            "description": "Set up your add-on",
+            "tabs": [
+                {
+                    "name": "account",
+                    "title": "Account",
+                    "table": {
+                        "header": [
+                            {
+                                "field": "name",
+                                "label": "Account name"
+                            }
+                        ],
+                        "actions": [
+                            "edit",
+                            "delete",
+                            "clone"
+                        ]
+                    },
+                    "entity": [
+                        {
+                            "field": "name",
+                            "label": "Account name",
+                            "type": "text",
+                            "required": true,
+                            "help": "Enter a unique name for this account.",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 50,
+                                    "errorMsg": "Length of Account name should be between 1 and 50"
+                                },
+                                {
+                                    "type": "regex",
+                                    "pattern": "^[a-zA-Z]\\w*$",
+                                    "errorMsg": "Account name must start with a letter and followed by alphabetic letters, digits or underscores."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "api_key",
+                            "label": "API Key",
+                            "type": "text",
+                            "encrypted": true,
+                            "required": true,
+                            "help": "Enter the Datadog API key for this account.",
+                            "options": {
+                                "placeholder": "Enter the username here"
+                            },
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Length of username should be between 1 and 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "app_key",
+                            "label": "APP Key",
+                            "type": "text",
+                            "encrypted": true,
+                            "required": true,
+                            "help": "Enter the Datadog Application key for this account.",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Length of Datadog Application key should be between 1 and 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "dd_site",
+                            "label": "Datadog Site",
+                            "type": "text",
+                            "encrypted": false,
+                            "required": true,
+                            "help": "Enter the Datadog Site for this account. Please enter \"com\" if you are on Datadog US site or enter \"eu\" if you are on Datadog EU site.",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Length of Datadog Site should be between 1 and 8192"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "proxy",
+                    "title": "Proxy",
+                    "entity": [
+                        {
+                            "field": "proxy_enabled",
+                            "label": "Enable",
+                            "type": "checkbox"
+                        },
+                        {
+                            "field": "proxy_type",
+                            "label": "Proxy Type",
+                            "type": "singleSelect",
+                            "options": {
+                                "disableSearch": true,
+                                "autoCompleteFields": [
+                                    {
+                                        "label": "http",
+                                        "value": "http"
+                                    },
+                                    {
+                                        "label": "socks4",
+                                        "value": "socks4"
+                                    },
+                                    {
+                                        "label": "socks5",
+                                        "value": "socks5"
+                                    }
+                                ]
+                            },
+                            "defaultValue": "http"
+                        },
+                        {
+                            "field": "proxy_url",
+                            "label": "Host",
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 4096,
+                                    "errorMsg": "Max host length is 4096"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "proxy_port",
+                            "label": "Port",
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "number",
+                                    "range": [
+                                        1,
+                                        65535
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "field": "proxy_username",
+                            "label": "Username",
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 50,
+                                    "errorMsg": "Max length of username is 50"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "proxy_password",
+                            "label": "Password",
+                            "type": "text",
+                            "encrypted": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of password is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "proxy_rdns",
+                            "label": "Remote DNS resolution",
+                            "type": "checkbox"
+                        }
+                    ],
+                    "options": {
+                        "saveValidator": "function(formData) { if(!formData.proxy_enabled || formData.proxy_enabled === '0') {return true; } if(!formData.proxy_url) { return 'Proxy Host can not be empty'; } if(!formData.proxy_port) { return 'Proxy Port can not be empty'; } return true; }"
+                    }
+                },
+                {
+                    "name": "logging",
+                    "title": "Logging",
+                    "entity": [
+                        {
+                            "field": "loglevel",
+                            "label": "Log level",
+                            "type": "singleSelect",
+                            "options": {
+                                "disableSearch": true,
+                                "autoCompleteFields": [
+                                    {
+                                        "label": "DEBUG",
+                                        "value": "DEBUG"
+                                    },
+                                    {
+                                        "label": "INFO",
+                                        "value": "INFO"
+                                    },
+                                    {
+                                        "label": "WARNING",
+                                        "value": "WARNING"
+                                    },
+                                    {
+                                        "label": "ERROR",
+                                        "value": "ERROR"
+                                    },
+                                    {
+                                        "label": "CRITICAL",
+                                        "value": "CRITICAL"
+                                    }
+                                ]
+                            },
+                            "defaultValue": "INFO"
+                        }
+                    ]
+                }
+            ]
+        },
+        "inputs": {
+            "title": "Inputs",
+            "description": "Manage your data inputs",
+            "table": {
+                "header": [
+                    {
+                        "field": "name",
+                        "label": "Name"
+                    },
+                    {
+                        "field": "interval",
+                        "label": "Interval"
+                    },
+                    {
+                        "field": "index",
+                        "label": "Index"
+                    },
+                    {
+                        "field": "disabled",
+                        "label": "Status"
+                    }
+                ],
+                "moreInfo": [
+                    {
+                        "field": "name",
+                        "label": "Name"
+                    },
+                    {
+                        "field": "interval",
+                        "label": "Interval"
+                    },
+                    {
+                        "field": "index",
+                        "label": "Index"
+                    },
+                    {
+                        "field": "disabled",
+                        "label": "Status"
+                    },
+                    {
+                        "field": "global_account",
+                        "label": "Global Account"
+                    },
+                    {
+                        "field": "start_time",
+                        "label": "Start Time"
+                    },
+                    {
+                        "field": "end_time",
+                        "label": "End Time"
+                    },
+                    {
+                        "field": "priority",
+                        "label": "Priority"
+                    },
+                    {
+                        "field": "sources",
+                        "label": "Sources"
+                    },
+                    {
+                        "field": "tags",
+                        "label": "Tags"
+                    },
+                    {
+                        "field": "unaggregated",
+                        "label": "Unaggregated"
+                    },
+                    {
+                        "field": "query",
+                        "label": "Query"
+                    },
+                    {
+                        "field": "custom_metrics",
+                        "label": "Custom Metrics (optional)"
+                    },
+                    {
+                        "field": "duration",
+                        "label": "Duration (To)"
+                    },
+                    {
+                        "field": "duration_unit",
+                        "label": "Duration (To) Unit"
+                    }
+                ],
+                "actions": [
+                    "edit",
+                    "enable",
+                    "delete",
+                    "clone"
+                ]
+            },
+            "services": [
+                {
+                    "name": "datadog_event_stream",
+                    "title": "datadog event stream",
+                    "entity": [
+                        {
+                            "field": "name",
+                            "label": "Name",
+                            "type": "text",
+                            "help": "Enter a unique name for the data input",
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^[a-zA-Z]\\w*$",
+                                    "errorMsg": "Input Name must start with a letter and followed by alphabetic letters, digits or underscores."
+                                },
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 100,
+                                    "errorMsg": "Length of input name should be between 1 and 100"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "interval",
+                            "label": "Interval",
+                            "type": "text",
+                            "required": true,
+                            "help": "Time interval of input in seconds.",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^\\-[1-9]\\d*$|^\\d*$",
+                                    "errorMsg": "Interval must be an integer."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "index",
+                            "label": "Index",
+                            "type": "singleSelect",
+                            "defaultValue": "default",
+                            "options": {
+                                "endpointUrl": "data/indexes",
+                                "blackList": "^_.*$",
+                                "createSearchChoice": true
+                            },
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 80,
+                                    "errorMsg": "Length of index name should be between 1 and 80."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "global_account",
+                            "label": "Global Account",
+                            "help": "Please select a global account for this input.",
+                            "required": true,
+                            "type": "singleSelect",
+                            "options": {
+                                "referenceName": "account"
+                            }
+                        },
+                        {
+                            "field": "start_time",
+                            "label": "Start Time",
+                            "help": "This is the start time from where you want to ingest the data. Please enter UTC time. Example Format: 2020-02-08 00:00:00",
+                            "required": true,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ],
+                            "options": {
+                                "placeholder": "2020-02-08 00:00:00"
+                            }
+                        },
+                        {
+                            "field": "end_time",
+                            "label": "End Time",
+                            "help": "This is the end time to where you want to ingest the data. It could be a future time. Please enter UTC time. Example Format: 2030-03-08 22:11:59",
+                            "required": true,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ],
+                            "options": {
+                                "placeholder": "2030-03-08 22:11:59"
+                            }
+                        },
+                        {
+                            "field": "priority",
+                            "label": "Priority",
+                            "help": "Priority of your events. (optional)",
+                            "required": false,
+                            "type": "radio",
+                            "defaultValue": "none",
+                            "options": {
+                                "items": [
+                                    {
+                                        "value": "low",
+                                        "label": "low"
+                                    },
+                                    {
+                                        "value": "normal",
+                                        "label": "normal"
+                                    },
+                                    {
+                                        "value": "none",
+                                        "label": "none"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "field": "sources",
+                            "label": "Sources",
+                            "help": "A comma separated string of sources. (optional)",
+                            "required": false,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "tags",
+                            "label": "Tags",
+                            "help": "A comma separated list indicating what tags, if any, should be used to filter the list of monitors by scope. (optional)",
+                            "required": false,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "unaggregated",
+                            "label": "Unaggregated",
+                            "help": "Set unaggregated to true to return all events within the specified [start,end] timeframe. ",
+                            "required": false,
+                            "type": "checkbox",
+                            "defaultValue": true
+                        }
+                    ]
+                },
+                {
+                    "name": "datadog_metric_inventory",
+                    "title": "datadog metric inventory",
+                    "entity": [
+                        {
+                            "field": "name",
+                            "label": "Name",
+                            "type": "text",
+                            "help": "Enter a unique name for the data input",
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^[a-zA-Z]\\w*$",
+                                    "errorMsg": "Input Name must start with a letter and followed by alphabetic letters, digits or underscores."
+                                },
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 100,
+                                    "errorMsg": "Length of input name should be between 1 and 100"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "interval",
+                            "label": "Interval",
+                            "type": "text",
+                            "required": true,
+                            "help": "Time interval of input in seconds.",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^\\-[1-9]\\d*$|^\\d*$",
+                                    "errorMsg": "Interval must be an integer."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "index",
+                            "label": "Index",
+                            "type": "singleSelect",
+                            "defaultValue": "default",
+                            "options": {
+                                "endpointUrl": "data/indexes",
+                                "blackList": "^_.*$",
+                                "createSearchChoice": true
+                            },
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 80,
+                                    "errorMsg": "Length of index name should be between 1 and 80."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "global_account",
+                            "label": "Global Account",
+                            "help": "Please select a global account for this input.",
+                            "required": true,
+                            "type": "singleSelect",
+                            "options": {
+                                "referenceName": "account"
+                            }
+                        },
+                        {
+                            "field": "query",
+                            "label": "Query",
+                            "help": "Query string",
+                            "required": true,
+                            "type": "singleSelect",
+                            "options": {
+                                "disableSearch": true,
+                                "autoCompleteFields": [
+                                    {
+                                        "value": "system.core.system{*}by{host}",
+                                        "label": "system.core.system{*}by{host}"
+                                    },
+                                    {
+                                        "value": "apache.net.hits{*}by{host}",
+                                        "label": "apache.net.hits{*}by{host}"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "field": "custom_metrics",
+                            "label": "Custom Metrics (optional)",
+                            "help": "Note: You may use \"Custom Metrics\" parameters from datadog (https://docs.datadoghq.com/integrations/system/) to override pre-populated \"Query\" parameter.",
+                            "required": false,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ],
+                            "options": {
+                                "placeholder": "i.e. aws.ec2.cpuutilization{*}by{host}"
+                            }
+                        },
+                        {
+                            "field": "start_time",
+                            "label": "Start Time",
+                            "help": "This is the start time from where you want to ingest the data. Please enter UTC time. Example Format: 2020-02-08 00:00:00",
+                            "required": true,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ],
+                            "options": {
+                                "placeholder": "2020-02-08 00:00:00"
+                            }
+                        },
+                        {
+                            "field": "duration",
+                            "label": "Duration (To)",
+                            "help": "",
+                            "required": true,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "duration_unit",
+                            "label": "Duration (To) Unit",
+                            "help": "",
+                            "required": false,
+                            "type": "singleSelect",
+                            "defaultValue": "Second",
+                            "options": {
+                                "disableSearch": true,
+                                "autoCompleteFields": [
+                                    {
+                                        "value": "Second",
+                                        "label": "Second"
+                                    },
+                                    {
+                                        "value": "Minute",
+                                        "label": "Minute"
+                                    },
+                                    {
+                                        "value": "Hour",
+                                        "label": "Hour"
+                                    },
+                                    {
+                                        "value": "Day",
+                                        "label": "Day"
+                                    },
+                                    {
+                                        "value": "Week",
+                                        "label": "Week"
+                                    },
+                                    {
+                                        "value": "Year",
+                                        "label": "Year"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

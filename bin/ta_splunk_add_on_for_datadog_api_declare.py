@@ -14,7 +14,7 @@ if sys.version_info[0] < 3:
 else:
     py_version = "aob_py3"
 
-ta_name = 'ta-splunk-add-on-for-datadog-api'
+ta_name = 'TA-splunk-add-on-for-datadog-api'
 ta_lib_name = 'ta_splunk_add_on_for_datadog_api'
 pattern = re.compile(r"[\\/]etc[\\/]apps[\\/][^\\/]+[\\/]bin[\\/]?$")
 new_paths = [path for path in sys.path if not pattern.search(path) or ta_name in path]

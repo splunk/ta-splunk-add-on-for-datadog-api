@@ -184,11 +184,12 @@ def collect_events(helper, ew):
         event = helper.new_event(source=input_type, index=helper.get_output_index(stanza_name), sourcetype=helper.get_sourcetype(stanza_name), data=data)
         ew.write_event(event)
     '''
-
-    opt_api_key = helper.get_global_setting('api_key')
-    opt_app_key = helper.get_global_setting('app_key')
-    opt_datadog_site = helper.get_global_setting('datadog_site')
-    
+    # Get account info   
+    global_account = helper.get_arg('global_account')
+    opt_api_key = global_account['api_key']
+    opt_app_key = global_account['app_key']
+    opt_datadog_site = global_account['dd_site']
+ 
     opt_start_time = helper.get_arg('start_time')
     opt_end_time = helper.get_arg('end_time')
 
@@ -278,13 +279,9 @@ def collect_events(helper, ew):
                 "\t[-] DataDog Events API Error: {}".format(response.text))
 
         events = response.json()
-        helper.log_debug("\t[-] DataDog Events Raw Events: {}".format(events))
 
         if "events" in events:
             for event in events['events']:
-
-                helper.log_debug(
-                    "\t\t[-] DataDog Events Each Individual Event: {}".format(event))
                 try:
                     event['ddhost'] = event['host']
                     event['ddsource'] = event['source']
@@ -298,7 +295,7 @@ def collect_events(helper, ew):
                 try:
                     event_time = event['date_happened']
                     event = helper.new_event(json.dumps(
-                        event), time=event_time, host=None, index=None, source=None, sourcetype="DataDog Events:events", done=True, unbroken=True)
+                        event), time=event_time, host=None, index=None, source=None, sourcetype=None, done=True, unbroken=True)
                     ew.write_event(event)
 
                     # save checkpoint for every event
@@ -308,10 +305,6 @@ def collect_events(helper, ew):
                     else:
                         timestamp = max(int(timestamp), int(event_time))
                     helper.save_check_point(last_ran_key, timestamp)
-                    helper.log_debug(
-                        "[-] DataDog Events: timestamp: {}".format(timestamp))
-                    helper.log_debug(
-                        "[-] DataDog Events: Last run time saved: {}".format(helper.get_check_point(last_ran_key)))
                 except Exception as e:
                     helper.log_debug(
                         "\t[-] Try Block 2: DataDog Events Exception {}".format(e))
