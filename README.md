@@ -99,6 +99,11 @@ The configuration steps are common for `on-prem` and `cloud`. Please follow the 
 * Mayur Pipaliya
 
 
+### Contributions
+
+If you would like to contribute to the AppInspect App, see [Contributing to Splunk](https://www.splunk.com/en_us/form/contributions.html). For additional guidelines, see [CONTRIBUTING](CONTRIBUTING.md). 
+
+
 ## EOF :checkered_flag:
 
 * Want to **contribute**? Great! Feel free to create a [PR](https://github.com/splunk/ta-splunk-add-on-for-datadog-api/pulls).
