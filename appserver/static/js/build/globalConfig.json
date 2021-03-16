@@ -2,7 +2,7 @@
     "meta": {
         "name": "TA-splunk-add-on-for-datadog-api",
         "displayName": "Datadog Add-on for Splunk",
-        "version": "1.0.9",
+        "version": "1.0.10",
         "apiVersion": "3.0.0",
         "restRoot": "TA_splunk_add_on_for_datadog_api"
     },
