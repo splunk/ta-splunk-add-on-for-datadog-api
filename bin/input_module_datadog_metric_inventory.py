@@ -201,25 +201,34 @@ def collect_events(helper, ew):
             raise ex
     else:
         events = response.json()
-        if events['status'] == "ok":
+        if events.get('status', None) and events['status'] == "ok":
             if len(events['series']) > 0:
                 for event in events['series']:
                     # event['Timestamp'] = str(event['start'])[:-3]
                     event['Timestamp'] = str(event['start']/1000)
             
                     # Calculated field: pointlist_average = sum of pointlist entries / count of pointlist entries
-                    total=0
-                    for point in event['pointlist']:
-                        total += point[1]
-                               
-                    event['pointlist_count']    = len(event['pointlist'])
-                    if event['pointlist_count'] == 0:
-                        event['pointlist_average'] = 0
-                    else:
-                        event['pointlist_average'] = total / event['pointlist_count']
+                    if event.get('pointlist', None):
+                        total=0
+                        for point in event['pointlist']:
+                            total += point[1]
+                                
+                        event['pointlist_count'] = len(event['pointlist'])
+                        if event['pointlist_count'] == 0:
+                            event['pointlist_average'] = 0
+                        else:
+                            event['pointlist_average'] = total / event['pointlist_count']
                                       
                     # Calcuated field: Host
-                    runtime_host = re.split(':', event['scope'])[1]
+                    # runtime_host = re.split(':', event['scope'])[1]
+                    runtime_host = None
+                    scope = event.get('scope', None)
+                    helper.log_debug("[-] scope: {}".format(scope))
+                    if scope:
+                        if len(re.split(':', scope)) == 2 and re.split(':', scope)[0] == "host":
+                            runtime_host = re.split(':', scope)[1]
+                    helper.log_debug("[-] runtime_host: {}".format(runtime_host))
+
             
                     # Build Event
                     # e = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(event))
