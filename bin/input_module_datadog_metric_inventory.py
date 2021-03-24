@@ -190,86 +190,95 @@ def collect_events(helper, ew):
     response = helper.send_http_request(url, "GET", parameters=None, payload=None,
                                         headers=headers, cookies=None, verify=True, cert=None, timeout=None, use_proxy=True)
 
-    helper.log_debug("[-] DataDog Metrics API: Response code: {}".format(response.status_code))
-    if response.status_code != 200:
-        helper.log_error(
-            "\t[-] DataDog Metrics API Error: {}".format(response.text))
-        e = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype="datadog:metric:errors", data=json.dumps(json.loads(response.text)))
-        try:
-            ew.write_event(e)
-        except Exception as ex:
-            raise ex
-    else:
-        events = response.json()
-        if events.get('status', None) and events['status'] == "ok":
-            if len(events['series']) > 0:
-                for event in events['series']:
-                    # event['Timestamp'] = str(event['start'])[:-3]
-                    event['Timestamp'] = str(event['start']/1000)
-            
-                    # Calculated field: pointlist_average = sum of pointlist entries / count of pointlist entries
-                    if event.get('pointlist', None):
-                        total=0
-                        for point in event['pointlist']:
-                            total += point[1]
-                                
-                        event['pointlist_count'] = len(event['pointlist'])
-                        if event['pointlist_count'] == 0:
-                            event['pointlist_average'] = 0
-                        else:
-                            event['pointlist_average'] = total / event['pointlist_count']
-                                      
-                    # Calcuated field: Host
-                    # runtime_host = re.split(':', event['scope'])[1]
-                    runtime_host = None
-                    scope = event.get('scope', None)
-                    helper.log_debug("[-] scope: {}".format(scope))
-                    if scope:
-                        if len(re.split(':', scope)) == 2 and re.split(':', scope)[0] == "host":
-                            runtime_host = re.split(':', scope)[1]
-                    helper.log_debug("[-] runtime_host: {}".format(runtime_host))
-
-            
-                    # Build Event
-                    # e = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(event))
-                    event_time = str(event['start'])[:-3]
-                    e = helper.new_event(time=event_time, host=runtime_host, source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=runtime_sourcetype, data=json.dumps(event), done=True, unbroken=True)
-                    try:
-                        ew.write_event(e)
-
-                        # update checkpoint with event['end'] 
-                        timestamp = str(event['end'])[:-3] 
-                        helper.save_check_point(key, timestamp)
-
-                    except Exception as ex:
-                        raise ex
-            else:
-                events['Timestamp'] = str(events['from_date']/1000)
-
-                event_time = str(events['from_date'])[:-3]
-        
-                # Build Event
-                # e = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(event))
-                e = helper.new_event(time=event_time, host=None, source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=runtime_sourcetype, data=json.dumps(events), done=True, unbroken=True)
-                try:
-                    ew.write_event(e)
-                    # update checkpoint with events['to_date'] 
-                    timestamp = str(events['to_date'])[:-3]
-                    helper.save_check_point(key, timestamp)
-                except Exception as ex:
-                    raise ex
-            
-        # when "status" != ok -- e.g. invalid query string 
-        # write into datadog:metric:errors and log error
-        else:
+    helper.log_debug("[-] DataDog Metrics API: Response code: {} - Response headers: {}".format(response.status_code, response.headers))
+    try:
+        if response.status_code != 200:
             helper.log_error(
-            "\t[-] DataDog Metrics API Error: {}".format(events["error"]))
-            e = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype="datadog:metric:errors", data=json.dumps(events))
+                "\t[-] DataDog Metrics API Error: {}".format(response.text))
+            e = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype="datadog:metric:errors", data=json.dumps(response.json()))
             try:
                 ew.write_event(e)
             except Exception as ex:
                 raise ex
+        else:
+            events = response.json()
+            if events.get('status', None) and events['status'] == "ok":
+                if len(events['series']) > 0:
+                    for event in events['series']:
+                        # event['Timestamp'] = str(event['start'])[:-3]
+                        event['Timestamp'] = str(event['start']/1000)
+                
+                        # Calculate field: pointlist_average = sum of pointlist entries / count of pointlist entries
+                        try:
+                            if event.get('pointlist', None):
+                                total=0
+                                for point in event['pointlist']:
+                                    total += point[1]
+                                        
+                                event['pointlist_count'] = len(event['pointlist'])
+                                if event['pointlist_count'] == 0:
+                                    event['pointlist_average'] = 0
+                                else:
+                                    event['pointlist_average'] = total / event['pointlist_count']
+                        except Exception as e:
+                            helper.log_error("[-] Error happened while Calculating pointlist_average t: {}".format(e))
+                                        
+                        # Calculate field: Host
+                        try:
+                            runtime_host = None
+                            scope = event.get('scope', None)
+                            helper.log_debug("[-] scope: {}".format(scope))
+                            if scope:
+                                if len(re.split(':', scope)) == 2 and re.split(':', scope)[0] == "host":
+                                    runtime_host = re.split(':', scope)[1]
+                            helper.log_debug("[-] runtime_host: {}".format(runtime_host))
+                        except Exception as e:
+                            helper.log_error("[-] Error happened while extracting the runtime host: {}".format(e))
 
-        
+                
+                        # Build Event
+                        # e = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(event))
+                        event_time = str(event['start'])[:-3]
+                        e = helper.new_event(time=event_time, host=runtime_host, source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=runtime_sourcetype, data=json.dumps(event), done=True, unbroken=True)
+                        try:
+                            ew.write_event(e)
+
+                            # update checkpoint with event['end'] 
+                            timestamp = str(event['end'])[:-3] 
+                            helper.save_check_point(key, timestamp)
+
+                        except Exception as ex:
+                            raise ex
+                else:
+                    events['Timestamp'] = str(events['from_date']/1000)
+
+                    event_time = str(events['from_date'])[:-3]
+            
+                    # Build Event
+                    # e = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=json.dumps(event))
+                    e = helper.new_event(time=event_time, host=None, source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=runtime_sourcetype, data=json.dumps(events), done=True, unbroken=True)
+                    try:
+                        ew.write_event(e)
+                        # update checkpoint with events['to_date'] 
+                        timestamp = str(events['to_date'])[:-3]
+                        helper.save_check_point(key, timestamp)
+                    except Exception as ex:
+                        raise ex
+                
+            # when "status" != ok -- e.g. invalid query string 
+            # write into datadog:metric:errors and log error
+            else:
+                helper.log_error(
+                "\t[-] DataDog Metrics API Error: {}".format(events["error"]))
+                e = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype="datadog:metric:errors", data=json.dumps(events))
+                try:
+                    ew.write_event(e)
+                except Exception as ex:
+                    raise ex
+    except Exception as e:
+        helper.log_error("[-] Error happended while parsing the response: {}".format(e))
+
+
+            
         
             
