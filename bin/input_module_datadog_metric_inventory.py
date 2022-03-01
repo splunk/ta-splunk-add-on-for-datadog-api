@@ -131,12 +131,14 @@ def collect_events(helper, ew):
 
     # TODO add checkpoint
     # set checkpoint key
+    # checkpoint key cannot contian '/', replace '/' with '-' in case query contains any '/'
+    update_query = query.replace("/","-")
     key = "{}_DATADOG_METRICS_processing_for_{}_{}_{}_{}".format(
         helper.get_input_stanza_names(),
         opt_start_time,
         opt_duration,
         opt_duration_unit,
-        query,
+        update_query,
     )
 
     # check checkpoint
@@ -148,6 +150,7 @@ def collect_events(helper, ew):
     )
 
     # Fist time: use start time from UI and save it in checkpoint
+    helper.log_debug("[-] DataDog Metrics: getting checkpoint key: {}\nval: {}".format(key, helper.get_check_point(key)))
     if helper.get_check_point(key) is None:
         # convert start time to datetime type
         opt_start_time = datetime.strptime(opt_start_time, "%Y-%m-%d %H:%M:%S")
