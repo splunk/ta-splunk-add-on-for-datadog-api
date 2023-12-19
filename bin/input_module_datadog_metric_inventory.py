@@ -199,15 +199,15 @@ def collect_events(helper, ew):
         payload=None,
         headers=headers,
         cookies=None,
-        verify=True,
+        verify=False,
         cert=None,
         timeout=None,
         use_proxy=True,
     )
 
     helper.log_debug(
-        "[-] DataDog Metrics API: Response code: {} - Response headers: {}".format(
-            response.status_code, response.headers
+        "[-] DataDog Metrics API: Response code: {}".format(
+            response.status_code
         )
     )
     try:
