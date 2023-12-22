@@ -50,9 +50,6 @@
                             "encrypted": true,
                             "required": true,
                             "help": "Enter the Datadog API key for this account.",
-                            "options": {
-                                "placeholder": "Enter the username here"
-                            },
                             "validators": [{
                                 "type": "string",
                                 "minLength": 1,
