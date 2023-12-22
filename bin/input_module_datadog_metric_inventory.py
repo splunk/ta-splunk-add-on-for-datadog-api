@@ -199,7 +199,7 @@ def collect_events(helper, ew):
         payload=None,
         headers=headers,
         cookies=None,
-        verify=False,
+        verify=True,
         cert=None,
         timeout=None,
         use_proxy=True,

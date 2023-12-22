@@ -286,7 +286,7 @@ def collect_events(helper, ew):
                         opt_sources, opt_tags, opt_unaggregated)
 
         response = helper.send_http_request(url, "GET", parameters=None, payload=None,
-                                            headers=headers, cookies=None, verify=False, cert=None, timeout=None, use_proxy=True)
+                                            headers=headers, cookies=None, verify=True, cert=None, timeout=None, use_proxy=True)
 
         helper.log_debug("[-] DataDog Events API: Response code: {}".format(response.status_code))
 
