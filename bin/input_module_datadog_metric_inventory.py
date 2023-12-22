@@ -225,7 +225,7 @@ def collect_events(helper, ew):
                 ew.write_event(e)
             except Exception as ex:
                 helper.log_error(
-                    "\t[-] Error happend while creating/writing error event{}".format(e)
+                    "\t[-] Error happened while creating/writing error event{}".format(e)
                 )
                 raise ex
         else:
@@ -300,7 +300,7 @@ def collect_events(helper, ew):
 
                         except Exception as ex:
                             helper.log_error(
-                                "\t[-] Error happend while creating/writing normal event{}".format(
+                                "\t[-] Error happened while creating/writing normal event{}".format(
                                     e
                                 )
                             )
@@ -330,7 +330,7 @@ def collect_events(helper, ew):
                         helper.save_check_point(key, timestamp)
                     except Exception as ex:
                         helper.log_error(
-                            "\t[-] Error happend while creating/writing event{}".format(
+                            "\t[-] Error happened while creating/writing event{}".format(
                                 e
                             )
                         )
@@ -352,8 +352,8 @@ def collect_events(helper, ew):
                     ew.write_event(e)
                 except Exception as ex:
                     helper.log_error(
-                        "\t[-] Error happend while creating/writing event{}".format(e)
+                        "\t[-] Error happened while creating/writing event{}".format(e)
                     )
                     raise ex
     except Exception as e:
-        helper.log_error("[-] Error happended while parsing the response: {}".format(e))
+        helper.log_error("[-] Error happened while parsing the response: {}".format(e))
